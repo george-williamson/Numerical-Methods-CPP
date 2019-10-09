@@ -1,0 +1,89 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf200
+{\fonttbl\f0\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs24 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 #include <iostream>\
+#include <cmath>\
+#include <vector>\
+#include <random>\
+using namespace std;\
+\
+double mean(const vector<double>& v);\
+double var(const vector<double>& v);\
+\
+double f(const double x);\
+double g(const double x);\
+\
+int main() \{\
+\
+	const int s = 31;\
+	mt19937_64 mtrand(s);\
+	uniform_real_distribution<double> unif(0.0, 1.0);\
+\
+	// c needs to be at least 30/16 to have f(x) <= c*g(x) \
+	const double c = 2.0;\
+\
+	const int n = 10000;\
+	vector<double> v(n);\
+	int m = 0;\
+	for (int i = 0; i<n; i++) \{\
+		bool accept = false;\
+		// This code generates one value of x \
+		// as a random variable with pdf f:\
+		double x = 0.0;\
+		do \{\
+			const double y = unif(mtrand); // generate y with pdf g, which here is unif(0, 1)\
+			const double u = unif(mtrand); // generate u ~ unif(0, 1) for the acceptance check\
+			m++;\
+			if (u < f(y)/(c*g(y))) \{\
+				accept = true;\
+				x = y;\
+			\}\
+		\} while (accept == false);\
+		v[i] = x;\
+	\}\
+	cout << double(m)/double(n) << endl;\
+\
+	// Did anyone check the mean and variance against the theoretical values?\
+	// https://en.wikipedia.org/wiki/Beta_distribution\
+	const double alpha = 3.0;\
+	const double beta = 3.0;\
+	cout << alpha/(alpha+beta) << "\\t" << mean(v) << endl;\
+	cout << alpha*beta/((alpha+beta)*(alpha+beta)*(alpha+beta+1.0)) << "\\t" << var(v) << endl;\
+\
+\}\
+\
+double f(const double x) \{\
+	if (x<0.0 || x>1.0)\
+		return 0.0;\
+	else\
+		return 30.0*x*x*(1-x)*(1-x);\
+\}\
+double g(const double x) \{\
+	if (x<0.0 || x>1.0)\
+		return 0.0;\
+	else\
+		return 1.0;\
+\}\
+\
+double mean(const vector<double>& v) \{\
+	double S = 0.0;\
+	for (int i = 0; i<v.size(); i++)\
+		S += v[i];\
+	return S/double(v.size());\
+\}\
+double var(const vector<double>& v) \{\
+	const double m = mean(v);\
+	double S = 0.0;\
+	for (int i = 0; i<v.size(); i++) \{\
+		const double y = (v[i]-m);\
+		S += y*y;\
+	\}\
+	return S/(double(v.size())-1.0);\
+\}\
+}
