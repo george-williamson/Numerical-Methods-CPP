@@ -1,0 +1,330 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf200
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 Menlo-Bold;
+\f3\fnil\fcharset0 Menlo-Italic;}
+{\colortbl;\red255\green255\blue255;\red253\green143\blue63;\red31\green31\blue36;\red252\green106\blue93;
+\red252\green95\blue163;\red255\green255\blue255;\red122\green200\blue182;\red108\green121\blue134;\red145\green212\blue98;
+\red150\green134\blue245;\red153\green232\blue213;\red174\green243\blue125;}
+{\*\expandedcolortbl;;\csgenericrgb\c99131\c56076\c24611;\csgenericrgb\c12054\c12284\c14131;\csgenericrgb\c98912\c41558\c36568;
+\csgenericrgb\c98839\c37355\c63833;\csgenericrgb\c100000\c100000\c100000;\csgenericrgb\c47716\c78607\c71403;\csgenericrgb\c42394\c47462\c52518;\csgenericrgb\c56799\c83212\c38450;
+\csgenericrgb\c58752\c52717\c95948;\csgenericrgb\c59926\c90967\c83488;\csgenericrgb\c68215\c95290\c48909;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab593
+\pard\tx593\pardeftab593\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf2 \cb3 #include \cf4 <iostream>
+\f1 \cf0 \
+
+\f0 \cf2 #include \cf4 <cmath>
+\f1 \cf0 \
+
+\f0 \cf2 #include \cf4 <vector>
+\f1 \cf0 \
+
+\f2\b \cf5 using
+\f0\b0 \cf6  
+\f2\b \cf5 namespace
+\f0\b0 \cf6  \cf7 std\cf6 ;
+\f1 \cf0 \
+
+\f3\i \cf8 //the lower incomplete gamma function is just the gamma function calc from 0 to x
+\f1\i0 \cf0 \
+
+\f3\i \cf8 //the upper incomplete gamma function is just the gamma function calc from x to infinity
+\f1\i0 \cf0 \
+\
+\
+
+\f2\b \cf5 struct
+\f0\b0 \cf6  Gamma \{
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 double
+\f0\b0 \cf6  alpha;
+\f1 \cf0 \
+
+\f0 \cf6     Gamma() : \cf9 alpha\cf6 (\cf10 1.0\cf6 ) \{\} 
+\f3\i \cf8 //constructor to set alpha = 1.0
+\f1\i0 \cf0 \
+
+\f0 \cf6     Gamma(
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  al) : \cf9 alpha\cf6 (al) \{\} 
+\f3\i \cf8 // constructor which accepts an argument i.e. if we do not specifically enter a parameter then it will take the default value of 1.
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 double
+\f0\b0 \cf6  
+\f2\b \cf5 operator
+\f0\b0 \cf6 ()(
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  t) 
+\f2\b \cf5 const
+\f0\b0 \cf6  \{ 
+\f3\i \cf8 // returns function so using operator()
+\f1\i0 \cf0 \
+
+\f0 \cf6         
+\f2\b \cf5 return
+\f0\b0 \cf6  \cf11 pow\cf6 (t, \cf9 alpha\cf6 -\cf10 1.0\cf6 )*\cf11 exp\cf6 (-t); 
+\f3\i \cf8 // pdf of lower incomplete gamma distributon
+\f1\i0 \cf0 \
+
+\f0 \cf6     \}
+\f1 \cf0 \
+
+\f0 \cf6 \};
+\f1 \cf0 \
+\
+
+\f2\b \cf5 template
+\f0\b0 \cf6  <
+\f2\b \cf5 typename
+\f0\b0 \cf6  F> 
+\f3\i \cf8 // standard trapezium rule function with template argument
+\f1\i0 \cf0 \
+
+\f2\b \cf5 double
+\f0\b0 \cf6  trapezium(
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  a, 
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  b,
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 int
+\f0\b0 \cf6  n, F f) \{
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  h = (b-a)/n;
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 double
+\f0\b0 \cf6  S = (f(a) + f(b))/\cf10 2.0\cf6 ;
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 for
+\f0\b0 \cf6  (
+\f2\b \cf5 int
+\f0\b0 \cf6  k = \cf10 1\cf6 ; k<n; k++) \{
+\f1 \cf0 \
+
+\f0 \cf6         S += f(a+k*h); 
+\f3\i \cf8 // in between heights calculated by the arbitrary function we've input >> in this case its lower gamma funct
+\f1\i0 \cf0 \
+
+\f0 \cf6     \}
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  I = S*h;
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 return
+\f0\b0 \cf6  I;
+\f1 \cf0 \
+
+\f0 \cf6 \}
+\f1 \cf0 \
+\
+
+\f2\b \cf5 double
+\f0\b0 \cf6  lower_gamma(
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  alpha,
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  x, 
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 int
+\f0\b0 \cf6  n) \{ 
+\f3\i \cf8 //computes trapezium rule value for given values
+\f1\i0 \cf0 \
+
+\f0 \cf6     \cf9 Gamma\cf6  gam(alpha); 
+\f3\i \cf8 //object to set alpha = to something specific which will then allow us to use in the trapezium funct.
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 return
+\f0\b0 \cf6  \cf12 trapezium\cf6 (\cf10 0\cf6 , x, n, gam); 
+\f3\i \cf8 // note its fixed at a=0 because this is specific to the gamma function its only for x>0
+\f1\i0 \cf0 \
+
+\f0 \cf6                                     
+\f3\i \cf8 // gam object now has specific value of alpha and can then return trapezium rule value
+\f1\i0 \cf0 \
+
+\f0 \cf6 \}
+\f1 \cf0 \
+\
+
+\f2\b \cf5 int
+\f0\b0 \cf6  factorial(
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 int
+\f0\b0 \cf6  n) \{ 
+\f3\i \cf8 // this function is specific to the question its to due with gamma function being equal to factorial (a rule)
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 int
+\f0\b0 \cf6  f = \cf10 1\cf6 ;
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 for
+\f0\b0 \cf6  (
+\f2\b \cf5 int
+\f0\b0 \cf6  i = \cf10 2\cf6 ; i<=n; i++)
+\f1 \cf0 \
+
+\f0 \cf6         f *= i;
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 return
+\f0\b0 \cf6  f;
+\f1 \cf0 \
+
+\f0 \cf6 \}
+\f1 \cf0 \
+\
+
+\f2\b \cf5 int
+\f0\b0 \cf6  main() \{
+\f1 \cf0 \
+
+\f0 \cf6     
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 int
+\f0\b0 \cf6  n = \cf10 100\cf6 ; 
+\f3\i \cf8 //number of strips
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  alpha1 = \cf10 1.0\cf6 ; 
+\f3\i \cf8 // value of alpha
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  x1 = \cf10 4.3\cf6 ; 
+\f3\i \cf8 // value of x that we wish to integrate to
+\f1\i0 \cf0 \
+
+\f0 \cf6     \cf7 cout\cf6  << \cf12 lower_gamma\cf6 (alpha1, x1, n) << \cf11 endl\cf6 ; 
+\f3\i \cf8 // prints out trapezium rule value for given values of (alpha, x, number of strips)
+\f1\i0 \cf0 \
+
+\f0 \cf6     \cf7 cout\cf6  << \cf10 1\cf6 -\cf11 exp\cf6 (-x1) << \cf11 endl\cf6  << \cf11 endl\cf6 ; 
+\f3\i \cf8 // this is specific check by the question
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f1 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  alpha2 = \cf10 2.0\cf6 ; 
+\f3\i \cf8 // testing now for alpha = 2 instead of 1
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  x2 = \cf10 1.0\cf6 ; 
+\f3\i \cf8 // integrating from 0-1 now
+\f1\i0 \cf0 \
+
+\f0 \cf6     \cf7 cout\cf6  << \cf12 lower_gamma\cf6 (alpha2, x2, n) << \cf11 endl\cf6  << \cf11 endl\cf6 ; 
+\f3\i \cf8 // prints out trapezium rule value for given values of (alpha, x, number of strips)
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f1 \cf0 \
+
+\f0 \cf6     
+\f1 \cf0 \
+
+\f0 \cf6     
+\f3\i \cf8 // this part shows the power of our approximations for a large number of strips
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 int
+\f0\b0 \cf6  n3 = \cf10 10000\cf6 ; 
+\f3\i \cf8 // a lot of strips
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  alpha3 = \cf10 5.0\cf6 ; 
+\f3\i \cf8 // alpha = 5
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f2\b \cf5 const
+\f0\b0 \cf6  
+\f2\b \cf5 double
+\f0\b0 \cf6  x3 = \cf10 100.0\cf6 ; 
+\f3\i \cf8 // close enough to infinity here // i.e. the majority of the distribution
+\f1\i0 \cf0 \
+
+\f0 \cf6     \cf7 cout\cf6  << \cf12 lower_gamma\cf6 (alpha3, x3, n3) << \cf11 endl\cf6 ;
+\f1 \cf0 \
+
+\f0 \cf6     \cf7 cout\cf6  << \cf12 factorial\cf6 (alpha3-\cf10 1\cf6 ) << \cf11 endl\cf6 ; 
+\f3\i \cf8 // the actual value of the distribution
+\f1\i0 \cf0 \
+
+\f0 \cf6     
+\f3\i \cf8 // we see that we receieve the actual value of our dist = our approximated value
+\f1\i0 \cf0 \
+
+\f0 \cf6 \}
+\f1 \cf0 \
+}
